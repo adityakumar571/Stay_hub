@@ -1,30 +1,36 @@
-const mongoose=require("mongoose");
-const initData= require("./data.js");
+const mongoose = require("mongoose");
+const initData = require("./data.js");
+const env = require('dotenv');
 
-const Listing=require("../models/listing.js");
+const Listing = require("../models/listing.js");
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
-
-main()
-  .then(() => {
-    console.log("Connected to DB");
-  })
-  .catch((err) => {
-    console.error("Connection error:", err); // Changed console.log to console.error for better indication of error
-  });
+env.config();
 
 async function main() {
-  await mongoose.connect(MONGO_URL); // Removed quotes around MONGO_URL variable
+  try {
+    await mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("Connected to DB");
+    await initDB();
+  } catch (err) {
+    console.error("Connection error:", err);
+  }
 }
 
-
-const initDB=async()=>{
+const initDB = async () => {
+  try {
     await Listing.deleteMany({});
-    initData.data=initData.data.map((obj)=> ({...obj,owner:"6654c1e90b1c0e239a397721"
+    const listings = initData.data[0].listings.map((obj) => ({
+      ...obj,
+      owner: "6654c1e90b1c0e239a397721",
     }));
-    await Listing.insertMany(initData.data);
-    console.log("data was initialized");
-
+    await Listing.insertMany(listings);
+    console.log("Data was initialized");
+  } catch (err) {
+    console.error("Initialization error:", err);
+  }
 };
 
-initDB();
+main();

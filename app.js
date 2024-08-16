@@ -4,7 +4,7 @@ if(process.env.NODE_ENV !="production"){
 
 console.log(process.env.secret)
 const mongoose = require("mongoose");
-
+       
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -31,7 +31,6 @@ const User=require("./models/user.js")
 
 // Changed variable name to start with a capital letter as per convention
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 main()
   .then(() => {
     console.log("Connected to DB");
@@ -41,7 +40,7 @@ main()
   });
 
 async function main() {
-  await mongoose.connect(MONGO_URL); // Removed quotes around MONGO_URL variable
+  await mongoose.connect(process.env.MONGO_URL); // Removed quotes around MONGO_URL variable
 }
 
 app.set("view engine", "ejs");
